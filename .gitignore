@@ -74,3 +74,6 @@ dbs/
 # Directory of CV/Motivation
 data/
 
+# Config file
+config.py
+
