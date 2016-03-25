@@ -2,9 +2,9 @@
 from scrapy.selector import Selector
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
-from scraper.scraper.items import ScraperItem
-from scraper.scraper.config import KEYWORDS, EMAIL, PASSWORD, CV_PATH
-from scraper.scraper.comm.utils import gen_start_urls
+from ..items import ScraperItem
+from ..config import KEYWORDS, EMAIL, PASSWORD, CV_PATH
+from ..comm.utils import gen_start_urls
 
 
 class MonsterSpider(CrawlSpider):
