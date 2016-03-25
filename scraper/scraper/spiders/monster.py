@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from scrapy.selector import Selector
-from scrapy.contrib.spiders import CrawlSpider, Rule
-from scrapy.contrib.linkextractors import LinkExtractor
-from ..items import ScraperItem
-from ..config import KEYWORDS, EMAIL, PASSWORD, CV_PATH
-from ..comm.utils import gen_start_urls
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.linkextractors import LinkExtractor
+from scraper.scraper.items import ScraperItem
+from scraper.scraper.config import KEYWORDS, EMAIL, PASSWORD, CV_PATH
+from scraper.scraper.comm.utils import gen_start_urls
 
 
 class MonsterSpider(CrawlSpider):
@@ -50,7 +50,13 @@ class MonsterSpider(CrawlSpider):
             urls.append(url.url)
 
         # Init browser
-        browser = webdriver.Firefox()
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference("browser.cache.disk.enable", False)
+        profile.set_preference("browser.cache.memory.enable", False)
+        profile.set_preference("browser.cache.offline.enable", False)
+        profile.set_preference("network.http.use-cache", False)
+
+        browser = webdriver.Firefox(profile)
         action = ActionChains(browser)
 
         # Login to user space
@@ -70,26 +76,13 @@ class MonsterSpider(CrawlSpider):
                 apply_link = link+apply_link[0]
                 print "* Processing %s" % url
                 browser.get(apply_link)
-                time.sleep(3)
-                if 'Saisissez votre adresse email de contact' in browser.page_source.encode("utf-8"):
-                    browser.find_element_by_name('tbxEmail').send_keys(EMAIL)
-                    browser.find_element_by_name('CoverLetter1$jvCoverLetterIncludeInput').click()
-                    browser.find_element_by_css_selector("input[type=\"file\"]").send_keys(CV_PATH)
-
-                    # Cocher "les termes"
-                    browser.find_element_by_name('chkAgreed').click()
+                if 'Vous postulez' in browser.page_source.encode("utf-8"):
+                    browser.find_element_by_css_selector("#CoverLetter1_DropDownListLetters > option:nth-child(2)").click()
+                    browser.find_element_by_css_selector("#rbAuthorizedNo0").click()
 
                     # Click on "POSTULER"
                     browser.find_element_by_id('btnSubmit').click()
-
-                elif "Vérifier vos informations de candidature" in browser.page_source.encode("utf-8"):
-                    # Select the motivation
-                    select_box = browser.find_element_by_name("CoverLetter2$DropDownListLetters") # if your select_box has a name.. why use xpath?..... this step could use either xpath or name, but name is sooo much easier.
-                    options = [x for x in select_box.find_elements_by_tag_name("option")] #this part is cool, because it searches the elements contained inside of select_box and then adds them to the list options if they have the tag name "options"
-                    options[1].click()
-
-                    # Click on "POSTULER"
-                    browser.find_element_by_id('btnSubmit').click()
+                    time.sleep(5)
 
                 else:
                     pass
@@ -107,7 +100,6 @@ class MonsterSpider(CrawlSpider):
                 session.query(Jobs).filter(Jobs.url == url).update({'processed': True})
                 session.commit()
                 session.close()
-                time.sleep(3)
 
         browser.close()
 
