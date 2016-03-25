@@ -69,5 +69,8 @@ target/
 
 # Scrapyd
 twistd.pid
+dbs/
 
+# Directory of CV/Motivation
+data/
 
