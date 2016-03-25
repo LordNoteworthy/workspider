@@ -67,3 +67,7 @@ target/
 # Pycharm
 .idea
 
+# Scrapyd
+twistd.pid
+
+
