@@ -2,18 +2,19 @@
 from scrapy.selector import Selector
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
-from scraper.scraper.items import ScraperItem
-from scraper.scraper.config import KEYWORDS, EMAIL, PASSWORD, CV_PATH
-from scraper.scraper.comm.utils import gen_start_urls
+from scraper.items import ScraperItem
+from scraper.config import KEYWORDS, EMAIL, PASSWORD
+from scraper.comm.utils import gen_start_urls
 
 
 class MonsterSpider(CrawlSpider):
 
     name = 'monster'
     allowed_domains = ['monster.fr']
-    start_urls = gen_start_urls("http://offres.monster.fr/offres-d-emploi/?q=%s", KEYWORDS, "-")
+    start_urls = gen_start_urls("http://www.monster.fr/emploi/recherche/?q=%s", KEYWORDS, "-")
     login_page = 'https://login.monster.fr/Login/SignIn'
-    rules = [Rule(LinkExtractor(allow=['.*jobPosition=.*?']), 'parse_job',), Rule(LinkExtractor(allow=('.*&pg=.*?', )), follow=True)]
+    rules = [Rule(LinkExtractor(allow=['.*jobPosition=.*?']), 'parse_job',),
+             Rule(LinkExtractor(allow=('.*page=.*?', )), follow=True)]
 
     def parse_job(self, response):
         job = ScraperItem()
@@ -29,7 +30,7 @@ class MonsterSpider(CrawlSpider):
 
     @staticmethod
     def execute_js():
-        from scraper.scraper.models import Jobs, db_connect
+        from scraper.models import Jobs, db_connect
         from selenium.webdriver.common.action_chains import ActionChains
         from sqlalchemy.orm import sessionmaker
         from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException

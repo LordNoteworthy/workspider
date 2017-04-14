@@ -12,7 +12,10 @@ BOT_NAME = 'scraper'
 
 SPIDER_MODULES = ['scraper.spiders']
 NEWSPIDER_MODULE = 'scraper.spiders'
-ITEM_PIPELINES = ['scraper.pipelines.JobsPipeline']
+
+ITEM_PIPELINES = {
+    'scraper.pipelines.JobsPipeline': 300
+}
 
 
 DOWNLOADER_MIDDLEWARES = {
@@ -30,4 +33,3 @@ DATABASE = {'drivername': 'postgres',
 LOG_LEVEL = 'DEBUG'
 DOWNLOAD_DELAY = 0.5
 COOKIES_ENABLED = True
-

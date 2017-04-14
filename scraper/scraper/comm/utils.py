@@ -1,5 +1,5 @@
 import os
-from ..config import basedir
+from ..config import root_dir
 
 
 def replace_all(text, dic):
@@ -28,7 +28,7 @@ def read_motivation(user):
     Read Motivation.txt and return text format
     """
     motiv_file = user + ' Motivation.txt'
-    file_path = os.path.join(basedir, 'data', motiv_file)
+    file_path = os.path.join(root_dir, 'data', motiv_file)
 
     with open(file_path, 'r') as content_file:
         Motivation = content_file.read()
